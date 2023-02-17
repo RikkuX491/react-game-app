@@ -41,8 +41,6 @@ function App() {
   }
 
   function updateGame(id){
-    console.log(id)
-    console.log(updateGameFormData)
     fetch(`http://localhost:3000/games/${id}`, {
       method: "PATCH",
       headers: {
@@ -51,7 +49,14 @@ function App() {
       body: JSON.stringify(updateGameFormData)
     })
     .then(response => response.json())
-    .then(updatedGame => console.log(updatedGame))
+    .then(updatedGame => setGames(games.map(game => {
+      if(game.id === Number(id)){
+        return updatedGame
+      }
+      else{
+        return game
+      }
+    })))
   }
 
   function handleChangeForUpdate(event){

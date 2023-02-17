@@ -2,8 +2,6 @@ import { useState } from 'react'
 
 function UpdateGameForm({games, updateGame, handleChangeForUpdate}){
 
-    const [id, setId] = useState(1)
-
     const optionTags = games.map(game => {
         return <option key={game.id} value={game.id}>{game.id}</option>
     })
@@ -11,11 +9,11 @@ function UpdateGameForm({games, updateGame, handleChangeForUpdate}){
     return(
         <form onSubmit={(event) => {
             event.preventDefault()
-            updateGame(id)
+            updateGame(event.target.childNodes[2].value)
         }}>
             <h1>Update a game:</h1>
             <label>Game ID: </label>
-            <select onChange={(event) => setId(event.target.value)}>
+            <select>
                 {optionTags}
             </select>
             <br/>
