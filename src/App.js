@@ -8,16 +8,25 @@ import UpdateGameForm from './UpdateGameForm';
 
 function App() {
 
+  // State for all of the games from the database
   const [games, setGames] = useState([])
+
+  // State for keeping track of the form data for a new game to be created
   const [postGameFormData, setPostGameFormData] = useState({})
+
+  // State for keeping track of the form data for a game to be updated
   const [updateGameFormData, setUpdateGameFormData] = useState({})
 
+  // Makes a GET request to get the data for all of the games from the database.
+  // Updates the games state to contain the data for all of the games from the database.
   useEffect(() => {
     fetch("http://localhost:3000/games")
     .then(response => response.json())
     .then(gameData => setGames(gameData))
   }, [])
 
+  // Creates a new game - persists in the backend,
+  // and updates the games state on the frontend to include the newly created game
   function createGame(event){
     event.preventDefault()
     fetch('http://localhost:3000/games', {
@@ -31,8 +40,10 @@ function App() {
     .then(newGame => setGames([...games, newGame]))
   }
 
+  // Updates the state containing the form data for the new game to be created
   function handleChangeForPost(event){
     if(event.target.name === 'release_year'){
+      // The release_year column's value needs to be an integer, so we should convert the value to a number
       setPostGameFormData({...postGameFormData, [event.target.name]: Number(event.target.value)})
     }
     else{
@@ -40,6 +51,8 @@ function App() {
     }
   }
 
+  // Updates a game - persists in the backend,
+  // and updates the games state on the frontend to update the specific game that needs to be updated
   function updateGame(id){
     fetch(`http://localhost:3000/games/${id}`, {
       method: "PATCH",
@@ -59,6 +72,7 @@ function App() {
     })))
   }
 
+  // Updates the state containing the form data for the new game to be updated
   function handleChangeForUpdate(event){
     if(event.target.name === 'release_year'){
       setUpdateGameFormData({ ...updateGameFormData, [event.target.name]: Number(event.target.value)})
@@ -68,6 +82,7 @@ function App() {
     }
   }
 
+  // Handles front-end functionality for a DELETE request
   function filterForDelete(id){
     setGames(games.filter(game => {
       return game.id !== id
