@@ -5,6 +5,9 @@ import GameList from './GameList'
 import NavBar from './NavBar';
 import CreateGameForm from './CreateGameForm';
 import UpdateGameForm from './UpdateGameForm';
+import Login from './Login';
+import LoggedOutNavBar from "./LoggedOutNavBar"
+import Signup from "./Signup"
 
 function App() {
 
@@ -17,10 +20,20 @@ function App() {
   // State for keeping track of the form data for a game to be updated
   const [updateGameFormData, setUpdateGameFormData] = useState({})
 
+  // State for a user. Initially null, until the user logs in
+  const [user, setUser] = useState(null)
+
+  // State for keeping track of the form data for login
+  const [loginFormData, setLoginFormData] = useState({})
+
+  // State for keeping track of the form data for signup
+  const [signupFormData, setSignupFormData] = useState({})
+  
+
   // Makes a GET request to get the data for all of the games from the database.
   // Updates the games state to contain the data for all of the games from the database.
   useEffect(() => {
-    fetch("http://localhost:3000/games")
+    fetch("/games")
     .then(response => response.json())
     .then(gameData => setGames(gameData))
   }, [])
@@ -29,7 +42,7 @@ function App() {
   // and updates the games state on the frontend to include the newly created game
   function createGame(event){
     event.preventDefault()
-    fetch('http://localhost:3000/games', {
+    fetch('/games', {
       method: "POST",
       headers: {
         "Content-Type": "application/json"
@@ -54,7 +67,7 @@ function App() {
   // Updates a game - persists in the backend,
   // and updates the games state on the frontend to update the specific game that needs to be updated
   function updateGame(id){
-    fetch(`http://localhost:3000/games/${id}`, {
+    fetch(`/games/${id}`, {
       method: "PATCH",
       headers: {
         "Content-Type": "application/json"
@@ -89,22 +102,119 @@ function App() {
     }))
   }
 
+  // Handle user log in
+  function onLogin(event){
+    event.preventDefault()
+    fetch("/login", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(loginFormData)
+    })
+    .then(response => {
+      if(response.ok){
+        response.json().then(userData => setUser(userData))
+      }
+      else if(response.status === 401){
+        alert("Error: Invalid username! Please try again!")
+      }
+      else{
+        alert(`Error: ${response.status} ${response.statusText}`)
+      }
+    })
+  }
+
+  // Check if user is currently logged in
+  useEffect(() => {
+    fetch("/me")
+    .then(response => {
+      if(response.ok){
+        response.json().then(userData => setUser(userData))
+      }
+    })
+  }, [])
+
+  function updateLoginFormData(event){
+    setLoginFormData({...loginFormData, [event.target.name]: event.target.value})
+  }
+
+  function onLogout(){
+    fetch("/logout", {
+      method: "DELETE"
+    })
+    .then(response => {
+      if(response.ok){
+        setUser(null)
+      }
+    })
+  }
+
+  function updateSignupFormData(event){
+    setSignupFormData({...signupFormData, [event.target.name]: event.target.value})
+  }
+
+  function onSignup(event){
+    event.preventDefault()
+    fetch("/signup", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(signupFormData)
+    })
+    .then(response => {
+      if(response.ok){
+        response.json().then(userData => setUser(userData))
+      }
+      else if(response.status === 422){
+        alert("Error: Username already exists or invalid Username! Please try again!")
+      }
+      else{
+        alert(`Error: ${response.status} ${response.statusText}`)
+      }
+    })
+  }
+
   return (
     <div className="App">
       <header className="App-header">
-        <NavBar/>
+        {
+          user ?
+          <>
+            <NavBar/>
+            <button onClick={onLogout}>Log Out</button>
+            {`Welcome ${user.username}!`}
+            <br/>
+          </> :
+          <LoggedOutNavBar/>
+        }
         <Switch>
           <Route exact path="/">
             <h1>WELCOME TO THE GAMES APP!</h1>
           </Route>
+          <Route path="/login">
+            {
+              user ?
+              null : 
+              <Login onLogin={onLogin} updateLoginFormData={updateLoginFormData}/>
+            }
+          </Route>
+          <Route path="/signup">
+            {
+              user ?
+              "Please log out before signing up for an account" :
+              <Signup onSignup={onSignup} updateSignupFormData={updateSignupFormData} />
+            }
+          </Route>
           <Route path="/games">
-            <GameList games={games} filterForDelete={filterForDelete}/>
+            {user ? <GameList games={user ? user.games : []} filterForDelete={filterForDelete}/> : "UNAUTHORIZED"}
           </Route>
           <Route path="/create_game">
-            <CreateGameForm createGame={createGame} handleChangeForPost={handleChangeForPost}/>
+            {user ? <CreateGameForm createGame={createGame} handleChangeForPost={handleChangeForPost}/> : "UNAUTHORIZED"}
           </Route>
           <Route path="/update_game">
-            <UpdateGameForm games={games} updateGame={updateGame} handleChangeForUpdate={handleChangeForUpdate}/>
+            {user ? <UpdateGameForm games={games} updateGame={updateGame} handleChangeForUpdate={handleChangeForUpdate}/> : "UNAUTHORIZED"}
           </Route>
         </Switch>
       </header>

@@ -1,7 +1,7 @@
 function Game({game, filterForDelete}){
 
     function deleteGame(){
-        fetch(`http://localhost:3000/games/${game.id}`, {
+        fetch(`/games/${game.id}`, {
             method: "DELETE",
             headers: {
               "Content-Type": "application/json"
