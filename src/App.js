@@ -208,13 +208,13 @@ function App() {
             }
           </Route>
           <Route path="/games">
-            {user ? <GameList games={user ? user.games : []} filterForDelete={filterForDelete}/> : "UNAUTHORIZED"}
+            {user ? <GameList games={games} filterForDelete={filterForDelete}/> : "Please log in to view games"}
           </Route>
           <Route path="/create_game">
-            {user ? <CreateGameForm createGame={createGame} handleChangeForPost={handleChangeForPost}/> : "UNAUTHORIZED"}
+            {user ? <CreateGameForm createGame={createGame} handleChangeForPost={handleChangeForPost}/> : "Please log in to create a game"}
           </Route>
           <Route path="/update_game">
-            {user ? <UpdateGameForm games={games} updateGame={updateGame} handleChangeForUpdate={handleChangeForUpdate}/> : "UNAUTHORIZED"}
+            {user ? <UpdateGameForm games={games} updateGame={updateGame} handleChangeForUpdate={handleChangeForUpdate}/> : "Please log in to update a game"}
           </Route>
         </Switch>
       </header>
