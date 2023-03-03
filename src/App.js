@@ -117,7 +117,7 @@ function App() {
         response.json().then(userData => setUser(userData))
       }
       else if(response.status === 401){
-        alert("Error: Invalid username! Please try again!")
+        alert("Error: Invalid username or password! Please try again!")
       }
       else{
         alert(`Error: ${response.status} ${response.statusText}`)
