@@ -1,6 +1,7 @@
 import './App.css';
 import { Route, Switch } from "react-router-dom";
 import { useState, useEffect } from 'react';
+import ReviewList from './ReviewList'
 import GameList from './GameList'
 import NavBar from './NavBar';
 import CreateGameForm from './CreateGameForm';
@@ -22,6 +23,8 @@ function App() {
 
   // State for a user. Initially null, until the user logs in
   const [user, setUser] = useState(null)
+
+  console.log(user)
 
   // State for keeping track of the form data for login
   const [loginFormData, setLoginFormData] = useState({})
@@ -95,11 +98,34 @@ function App() {
     }
   }
 
-  // Handles front-end functionality for a DELETE request
-  function filterForDelete(id){
-    setGames(games.filter(game => {
-      return game.id !== id
-    }))
+  // Delete's a User's game from the backend and handles front-end functionality for a DELETE request for when a User DELETEs one of their games.
+  function deleteGame(id){
+    fetch(`/games/${id}`, {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json"
+      }
+    })
+    .then(() => {
+      setUser({...user, games: user.games.filter(game => {
+        return game.id !== id
+      })})
+    })
+  }
+
+  // Delete's a User's review from the backend and handles front-end functionality for a DELETE request for when a User DELETEs one of their reviews.
+  function deleteReview(id){
+    fetch(`/reviews/${id}`, {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json"
+      }
+    })
+    .then(() => {
+      setUser({...user, reviews: user.reviews.filter(review => {
+        return review.id !== id
+      })})
+    })
   }
 
   // Handle user log in
@@ -207,8 +233,11 @@ function App() {
               <Signup onSignup={onSignup} updateSignupFormData={updateSignupFormData} />
             }
           </Route>
+          <Route path="/reviews">
+            {user ? <ReviewList reviews={user.reviews} deleteReview={deleteReview}/> : "Please log in to view reviews"}
+          </Route>
           <Route path="/games">
-            {user ? <GameList games={games} filterForDelete={filterForDelete}/> : "Please log in to view games"}
+            {user ? <GameList games={user.games} deleteGame={deleteGame}/> : "Please log in to view games"}
           </Route>
           <Route path="/create_game">
             {user ? <CreateGameForm createGame={createGame} handleChangeForPost={handleChangeForPost}/> : "Please log in to create a game"}

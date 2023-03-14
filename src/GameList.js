@@ -1,9 +1,9 @@
 import Game from './Game'
 
-function GameList({games, filterForDelete}){
+function GameList({games, deleteGame}){
 
     const gameComponents = games.map(game => {
-        return <Game key={game.id} game={game} filterForDelete={filterForDelete}/>
+        return <Game key={game.id} game={game} deleteGame={deleteGame}/>
     })
     
     return (
