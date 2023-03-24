@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import ReviewList from './ReviewList'
 import NavBar from './NavBar';
 import CreateReviewForm from './CreateReviewForm';
-import UpdateGameForm from './UpdateGameForm';
+//import UpdateGameForm from './UpdateGameForm';
 import Login from './Login';
 import LoggedOutNavBar from "./LoggedOutNavBar"
 import Signup from "./Signup"
@@ -23,7 +23,7 @@ function App() {
   })
 
   // State for keeping track of the form data for a review to be updated
-  const [updateReviewFormData, setUpdateReviewFormData] = useState({})
+  //const [updateReviewFormData, setUpdateReviewFormData] = useState({})
 
   // State for a user. Initially null, until the user logs in
   const [user, setUser] = useState(null)
@@ -227,6 +227,7 @@ function App() {
     })
   }
 
+  // Signs up a new User - allows them to create a new account on the website
   function onSignup(event){
     event.preventDefault()
     fetch("/signup", {
