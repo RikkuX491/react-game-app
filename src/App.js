@@ -11,9 +11,6 @@ import Signup from "./Signup"
 
 function App() {
 
-  // State for all of the review from the database
-  const [reviews, setReviews] = useState([])
-
   // State for all of the games from the database
   const [games, setGames] = useState([])
 
@@ -35,16 +32,8 @@ function App() {
   const [signupFormData, setSignupFormData] = useState({})
 
   /*
-    GET requests for /reviews and /games
+    GET requests for /games
   */
-  
-  // Makes a GET request to get the data for all of the reviews from the database.
-  // Sets the reviews state to contain the data for all of the reviews from the database.
-  useEffect(() => {
-    fetch("/reviews")
-    .then(response => response.json())
-    .then(reviewData => setReviews(reviewData))
-  }, [])
 
   // Makes a GET request to get the data for all of the games from the database.
   // Sets the games state to contain the data for all of the games from the database.
@@ -77,7 +66,6 @@ function App() {
     .then(response => {
       if(response.ok){
         response.json().then(newReview => {
-          setReviews(reviews => [...reviews, newReview])
           setUser(user => {
             return {...user, reviews: [...user.reviews, newReview]}
           })
@@ -99,41 +87,6 @@ function App() {
         return {...postReviewFormData, [event.target.name]: Number(event.target.value)}
       })
   }
-
-  /*
-    PATCH request for /reviews/:id
-  */
-
-  // Updates a game - persists in the backend,
-  // and updates the games state on the frontend to update the specific game that needs to be updated
-  // function updateGame(id){
-  //   fetch(`/games/${id}`, {
-  //     method: "PATCH",
-  //     headers: {
-  //       "Content-Type": "application/json"
-  //     },
-  //     body: JSON.stringify(updateGameFormData)
-  //   })
-  //   .then(response => response.json())
-  //   .then(updatedGame => setGames(games.map(game => {
-  //     if(game.id === Number(id)){
-  //       return updatedGame
-  //     }
-  //     else{
-  //       return game
-  //     }
-  //   })))
-  // }
-
-  // Updates the state containing the form data for the new game to be updated
-  // function handleChangeForUpdate(event){
-  //   if(event.target.name === 'release_year'){
-  //     setUpdateGameFormData({ ...updateGameFormData, [event.target.name]: Number(event.target.value)})
-  //   }
-  //   else{
-  //     setUpdateGameFormData({ ...updateGameFormData, [event.target.name]: event.target.value })
-  //   }
-  // }
 
   /*
     DELETE request for /reviews/:id
